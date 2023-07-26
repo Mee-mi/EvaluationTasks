@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Table Generator</title>
+    
+</head>
+<body>
+    <h1>Table Generator</h1>
+    <form action="/table" method="post">
+        <label for="number">Enter a number:</label>
+        <input type="number" id="number" name="number" required>
+        <button type="submit">Generate Table</button>
+    </form>
+
+    <!-- {% if table %}
+    <h2>Table of {{ number }}</h2>
+    <table>
+        <tr>
+            <th>Multiplier</th>
+            <th>Result</th>
+        </tr>
+        {% for multiplier, result in table.items() %}
+        <tr>
+            <td>{{ multiplier }}</td>
+            <td>{{ result }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %} -->
+
+    {% for x in range(1,11): %}
+    <h3>{{num * x}}</h3> 
+    {% endfor %}
+</body>
+</html>

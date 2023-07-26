@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image MD5 Hash Calculator</title>
+</head>
+<body>
+    <h1>Image MD5 Hash Calculator</h1>
+    <form action="/img" method="post" enctype="multipart/form-data">
+        <label for="img">Select an image:</label>
+        <input type="file" id="img" name="img" accept="image/*" required>
+        <button type="submit">Calculate MD5 Hash</button>
+    </form>
+    {% if md5_hash %}
+        <p>MD5 Hash: {{ md5_hash }}</p>
+    {% endif %}
+</body>
+</html>
