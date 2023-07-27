@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Model Status Checker</title>
+</head>
+<body>
+    <h1>Model Status Checker</h1>
+    <form action="/process_request" method="post">
+        <label for="modelName">Enter Model Name:</label>
+        <input type="text" id="modelName" name="model">
+        <button type="submit">Check Status</button>
+    </form>
+    <p><strong>Currently Running Models:</strong></p>
+    <p>{{ models }}</p>
+</body>
+</html>
+
+
