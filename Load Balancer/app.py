@@ -12,7 +12,7 @@
 
  
 import traceback
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, url_for
 
 class ML:
     def __init__(self):
@@ -25,30 +25,38 @@ class ML:
             "water_level_detection": "/additional_drive/ML/water_level_detection",
             "missile_detection": "/additional_drive/ML/missile_detection"
         }
-        self.model_frequency = {model: 0 for model in self.available_models}
+        self.model_frequency = {
+           "shoe_detection": 1, "car_detection": 1, "face_detection": 0, "cloth_detection": 0,
+           "signal_detection": 0, "water_level_detection": 0, "missile_detection": 0
+        }
         self.loaded_models_limit = 2
-        self.loaded_models = {}
+        self.loaded_models = {
+            model: self.load_weights(model)
+            for model in list(self.available_models)[:self.loaded_models_limit]
+        }
 
     def load_weights(self, model):
         return self.available_models.get(model, None)
 
     def load_balancer(self, new_model):
-        if len(self.loaded_models) < self.loaded_models_limit:
-            self.loaded_models[new_model] = self.load_weights(new_model)
+        if new_model in self.loaded_models:
+            self.model_frequency[new_model] += 1
         else:
-            least_freq_model = min(self.model_frequency, key=self.model_frequency.get)
-            if least_freq_model in self.loaded_models:
-                del self.loaded_models[least_freq_model]
-            self.loaded_models[new_model] = self.load_weights(new_model)
+            if len(self.loaded_models) < self.loaded_models_limit:
+                self.loaded_models[new_model] = self.load_weights(new_model)
+            else:
+                least_freq_model = min(self.model_frequency, key=self.model_frequency.get)
+                if self.model_frequency[new_model] > self.model_frequency[least_freq_model]:
+                    del self.loaded_models[least_freq_model]
+                    self.loaded_models[new_model] = self.load_weights(new_model)
         self.model_frequency[new_model] += 1
 
 app = Flask(__name__)
 ml = ML()
 
-
 @app.route('/get_loaded_models', methods=['GET', 'POST'])
 def get_loaded_models():
-    return ', '.join(ml.loaded_models.keys())
+    return render_template('index.html', models=ml.loaded_models)
 
 @app.route('/request_model')
 def get_request_model():
@@ -61,7 +69,9 @@ def process_request():
             model = request.form['model']
             if model not in ml.loaded_models:
                 ml.load_balancer(model)
-            return redirect('/get_loaded_models')
+                return "processed , " + ml.loaded_models[model]
+            else:
+                return redirect(url_for('get_loaded_models'))
     except:
         return str(traceback.format_exc())
 
